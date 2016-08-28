@@ -1,0 +1,27 @@
+---
+- name: Shutdown VM
+  virt:
+    name: "{{ vm_name }}"
+    state: shutdown
+
+- name: Wait until shutdown
+  shell: virsh dominfo {{ vm_name }} | grep ^State
+  register: result
+  until: result.stdout.find("shut off") != -1
+  retries: 5
+  delay: 1
+
+- name: Start installed VM
+  virt:
+    name: "{{ vm_name }}"
+    state: running
+
+- name: Wait for VM re-boot
+  local_action:
+    module: wait_for
+    port: 22
+    host: "{{ new_host_fqdn }}"
+    search_regex: OpenSSH
+    delay: 3
+    timeout: 60
+    connect_timeout: 3 
