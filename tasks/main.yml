@@ -8,8 +8,8 @@
   shell: virsh dominfo {{ vm_name }} | grep ^State
   register: result
   until: result.stdout.find("shut off") != -1
-  retries: 5
-  delay: 1
+  retries: 61
+  delay: 2
 
 - name: Start installed VM
   virt:
